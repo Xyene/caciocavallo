@@ -93,11 +93,6 @@ public class WaylandToolkit extends CacioToolkit {
     }
 
     @Override
-    protected DesktopPeer createDesktopPeer(Desktop desktop) throws HeadlessException {
-        return null;
-    }
-
-    @Override
     public FontPeer getFontPeer(String s, int i) {
         return null;
     }
@@ -133,16 +128,6 @@ public class WaylandToolkit extends CacioToolkit {
     }
 
     @Override
-    protected int getScreenWidth() {
-        return WaylandGraphicsConfiguration.getDefaultConfiguration().getBounds().width;
-    }
-
-    @Override
-    protected int getScreenHeight() {
-        return WaylandGraphicsConfiguration.getDefaultConfiguration().getBounds().height;
-    }
-
-    @Override
     protected boolean syncNativeQueue(long l) {
         return false;
     }
@@ -160,6 +145,11 @@ public class WaylandToolkit extends CacioToolkit {
     @Override
     public boolean isDesktopSupported() {
         return false;
+    }
+
+    @Override
+    public boolean isTaskbarSupported() {
+        return true;
     }
 
     @Override
