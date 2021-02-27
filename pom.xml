@@ -79,6 +79,7 @@
             <additionalOption>--add-exports=java.desktop/sun.awt.event=ALL-UNNAMED</additionalOption>
             <additionalOption>--add-exports=java.desktop/sun.font=ALL-UNNAMED</additionalOption>
             <additionalOption>--add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED</additionalOption>
+            <additionalOption>--add-exports=java.desktop/sun.java2d.loops=ALL-UNNAMED</additionalOption>
             <additionalOption>--add-exports=java.base/sun.security.action=ALL-UNNAMED</additionalOption>
             <additionalOption>--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED</additionalOption>
             <additionalOption>--add-exports=java.desktop/sun.java2d=ALL-UNNAMED</additionalOption>
