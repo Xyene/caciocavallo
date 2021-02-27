@@ -29,15 +29,14 @@ import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.security.AccessController;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import sun.util.logging.PlatformLogger;
 import sun.awt.peer.cacio.CacioComponent;
 import sun.security.action.GetPropertyAction;
 
 public class FocusManager {
 
-    private static Logger logger = Logger.getLogger(FocusManager.class.getName());
+    private static PlatformLogger logger = PlatformLogger.getLogger(FocusManager.class.getName());
 
     private static FocusManager instance;
     private static final Class focusManagerCls;
@@ -54,7 +53,7 @@ public class FocusManager {
 		cls = Class.forName(focusMgrClsName);
 	    }
 	} catch (ClassNotFoundException e) {
-	    logger.log(Level.SEVERE, "Unable to load FocusManager implementation", e);
+	    logger.severe("Unable to load FocusManager implementation", e);
 	}
 
 	focusManagerCls = cls;
@@ -68,7 +67,7 @@ public class FocusManager {
 	    try {
 		instance = (FocusManager) focusManagerCls.newInstance();
 	    } catch (ReflectiveOperationException e) {
-		logger.log(Level.SEVERE, "Unable to create FocusManager instance", e);
+		logger.severe("Unable to create FocusManager instance", e);
 	    }
 	}
 	return instance.getContextInstance();
