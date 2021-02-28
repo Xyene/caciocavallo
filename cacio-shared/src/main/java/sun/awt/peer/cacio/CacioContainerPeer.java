@@ -119,7 +119,7 @@ abstract class CacioContainerPeer<AWTComponentType extends Component, SwingCompo
             if (AWTAccessor.getComponentAccessor().getFont(comp) == null) {
                 ComponentPeer peer = getPeer(comp);
                 if (peer instanceof CacioComponentPeer) {
-                    CacioComponentPeer ccp = (CacioComponentPeer) peer;
+                    CacioComponentPeer<?, ?> ccp = (CacioComponentPeer<?, ?>) peer;
                     if (ccp.getFont() != font) {
                         ccp.setFont(font);
                     }
@@ -140,7 +140,7 @@ abstract class CacioContainerPeer<AWTComponentType extends Component, SwingCompo
             if (AWTAccessor.getComponentAccessor().getForeground(comp) == null) {
                 ComponentPeer peer = getPeer(comp);
                 if (peer instanceof CacioComponentPeer) {
-                    CacioComponentPeer ccp = (CacioComponentPeer) peer;
+                    CacioComponentPeer<?, ?> ccp = (CacioComponentPeer<?, ?>) peer;
                     if (ccp.getForeground() != fg) {
                         ccp.setForeground(fg);
                     }
@@ -162,7 +162,7 @@ abstract class CacioContainerPeer<AWTComponentType extends Component, SwingCompo
             if (AWTAccessor.getComponentAccessor().getBackground(comp) == null) {
                 ComponentPeer peer = getPeer(comp);
                 if (peer instanceof CacioComponentPeer) {
-                    CacioComponentPeer ccp = (CacioComponentPeer) peer;
+                    CacioComponentPeer<?, ?> ccp = (CacioComponentPeer<?, ?>) peer;
                     if (ccp.getBackground() != bg) {
                         ccp.setBackground(bg);
                     }
@@ -194,7 +194,7 @@ abstract class CacioContainerPeer<AWTComponentType extends Component, SwingCompo
             if ((! enable) || AWTAccessor.getComponentAccessor().isEnabled(comp)) {
                 ComponentPeer peer = getPeer(comp);
                 if (peer instanceof CacioComponentPeer) {
-                    CacioComponentPeer ccp = (CacioComponentPeer) peer;
+                    CacioComponentPeer<?, ?> ccp = (CacioComponentPeer<?, ?>) peer;
                     if (ccp.isEnabled() != enable) {
                         ccp.setEnabledImpl(enable);
                     }

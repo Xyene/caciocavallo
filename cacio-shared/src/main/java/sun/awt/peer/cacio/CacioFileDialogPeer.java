@@ -37,7 +37,7 @@ class CacioFileDialogPeer extends CacioDialogPeer
 
     private static class ProxyFilter extends FileFilter {
 
-        private FilenameFilter target;
+        private final FilenameFilter target;
         ProxyFilter(FilenameFilter f) {
             target = f;
         }
@@ -66,7 +66,7 @@ class CacioFileDialogPeer extends CacioDialogPeer
         super.postInitSwingComponent();
         fileChooser = new JFileChooser();
         getSwingComponent().getContentPane().add(fileChooser);
-        getSwingComponent().layout();
+        getSwingComponent().doLayout();
         FileDialog fd = (FileDialog) getAWTComponent();
         setFile(fd.getFile());
         setDirectory(fd.getDirectory());

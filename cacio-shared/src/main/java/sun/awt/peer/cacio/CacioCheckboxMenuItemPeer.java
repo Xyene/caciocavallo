@@ -45,10 +45,10 @@ class CacioCheckboxMenuItemPeer extends CacioMenuItemPeer
             CheckboxMenuItem i = ((CheckboxMenuItem) getAWTMenu());
             ItemListener[] l = i.getItemListeners();
             if (l != null && l.length > 0) {
-                for (int idx = 0; idx < l.length; idx++) {
+                for (ItemListener itemListener : l) {
                     ItemEvent ev = new ItemEvent(i, e.getID(), i,
-                                                 e.getStateChange());
-                    l[idx].itemStateChanged(ev);
+                            e.getStateChange());
+                    itemListener.itemStateChanged(ev);
                 }
             }
         }

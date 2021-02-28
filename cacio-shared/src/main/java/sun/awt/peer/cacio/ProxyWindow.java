@@ -45,15 +45,17 @@ import javax.swing.JComponent;
  */
 public class ProxyWindow extends Window {
 
-    private CacioComponentPeer target;
+    private static final long serialVersionUID = 154428720939741L;
 
-    ProxyWindow(CacioComponentPeer t, JComponent c) {
+    private final CacioComponentPeer<?, ?> target;
+
+    ProxyWindow(CacioComponentPeer<?, ?> t, JComponent c) {
         super(null);
         target = t;
         add(c);
     }
 
-    CacioComponentPeer getTargetPeer() {
+    CacioComponentPeer<?, ?> getTargetPeer() {
         return target;
     }
 
@@ -69,22 +71,22 @@ public class ProxyWindow extends Window {
 
     void handleMouseEvent(MouseEvent e) {
         MouseEvent me = new MouseEvent(this, e.getID(), e.getWhen(),
-                                       e.getModifiers(), e.getX(), e.getY(),
+                                       e.getModifiersEx(), e.getX(), e.getY(),
                                        e.getXOnScreen(), e.getYOnScreen(),
                                        e.getClickCount(), e.isPopupTrigger(),
                                        e.getButton());
         // IMPORTANT: See comment on the helper method!
-        doLightweightDispatching(e);
+        doLightweightDispatching(me);
     }
 
     void handleMouseMotionEvent(MouseEvent e) {
         MouseEvent me = new MouseEvent(this, e.getID(), e.getWhen(),
-                                       e.getModifiers(), e.getX(), e.getY(),
+                                       e.getModifiersEx(), e.getX(), e.getY(),
                                        e.getXOnScreen(), e.getYOnScreen(),
                                        e.getClickCount(), e.isPopupTrigger(),
                                        e.getButton());
         // IMPORTANT: See comment on the helper method!
-        doLightweightDispatching(e);
+        doLightweightDispatching(me);
     }
 
     private static Field dispatcherField;
@@ -94,13 +96,11 @@ public class ProxyWindow extends Window {
         try {
             dispatcherField = Container.class.getDeclaredField("dispatcher");
             dispatcherField.setAccessible(true);
-            Class dispatcherCls = Class.forName("java.awt.LightweightDispatcher");
+            Class<?> dispatcherCls = Class.forName("java.awt.LightweightDispatcher");
             dispatchMethod = dispatcherCls.getDeclaredMethod("dispatchEvent", AWTEvent.class);
             dispatchMethod.setAccessible(true);
         } catch (Exception ex) {
-            InternalError err = new InternalError();
-            err.initCause(ex);
-            throw err;
+            throw new InternalError(ex);
         }
     }
 
@@ -123,9 +123,7 @@ public class ProxyWindow extends Window {
                 dispatchMethod.invoke(dispatcher, e);
             }
         } catch (Exception ex) {
-            InternalError err = new InternalError();
-            err.initCause(ex);
-            throw err;
+            throw new InternalError(ex);
         }
 
     }

@@ -178,7 +178,7 @@ public abstract class CacioEventPump<ET> implements Runnable {
                                         int width, int height, boolean paintBackground) {
         if (paintBackground)
         {
-          ((CacioComponentPeer) source).clearBackground();
+          ((CacioComponentPeer<?, ?>) source).clearBackground();
         }
         
         PaintEvent ev = PaintEventDispatcher.getPaintEventDispatcher()

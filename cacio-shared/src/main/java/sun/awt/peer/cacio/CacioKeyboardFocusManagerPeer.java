@@ -91,7 +91,7 @@ class CacioKeyboardFocusManagerPeer implements KeyboardFocusManagerPeer {
     /**
      * Clears the current global focus owner.
      *
-     * @param activeWindow
+     * @param activeWindow active window
      *
      * @see KeyboardFocusManager#clearGlobalFocusOwner()
      */

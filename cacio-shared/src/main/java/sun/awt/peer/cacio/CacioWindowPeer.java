@@ -99,11 +99,11 @@ class CacioWindowPeer extends CacioContainerPeer<Window, JRootPane>
 
         if (parentComp != null) {
 
-            CacioComponentPeer parentPeer = null;
+            CacioComponentPeer<?, ?> parentPeer;
 
             ComponentPeer parentComponentPeer = getPeer(parentComp);
             if (parentComponentPeer instanceof CacioComponentPeer) {
-                parentPeer = (CacioComponentPeer) parentComponentPeer;
+                parentPeer = (CacioComponentPeer<?, ?>) parentComponentPeer;
 
             } else if (parentComponentPeer instanceof ProxyWindowPeer) {
                 parentPeer =
@@ -148,7 +148,6 @@ class CacioWindowPeer extends CacioContainerPeer<Window, JRootPane>
     JRootPane initSwingComponent() {
         // We always need a rootPane, even for undecorated windows, otherwise
         // we cannot have menu support...
-        Window window = getAWTComponent();
         JRootPane jrootpane = new JRootPane();
         jrootpane.setDoubleBuffered(false);
         return jrootpane;
@@ -179,7 +178,7 @@ class CacioWindowPeer extends CacioContainerPeer<Window, JRootPane>
         }
 
         if (blocker != null) {
-            CacioWindowPeer dialogPeer = (CacioDialogPeer)AWTAccessor.getComponentAccessor().getPeer(blocker);
+            CacioWindowPeer dialogPeer = AWTAccessor.getComponentAccessor().getPeer(blocker);
             if (dialogPeer != null) {
               dialogPeer.setModalBlocked(null, !blocked);
             }

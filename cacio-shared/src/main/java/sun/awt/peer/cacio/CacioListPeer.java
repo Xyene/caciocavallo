@@ -17,7 +17,7 @@ import javax.swing.event.ListSelectionListener;
 
 final class CacioListPeer extends CacioComponentPeer<List, JScrollPane> implements ListPeer {
 
-    private JList list;
+    private JList<String> list;
 
     public CacioListPeer(List awtC, PlatformWindowFactory pwf) {
         super(awtC, pwf);
@@ -25,9 +25,8 @@ final class CacioListPeer extends CacioComponentPeer<List, JScrollPane> implemen
 
     @Override
     JScrollPane initSwingComponent() {
-        list = new JList(new DefaultListModel());
-        JScrollPane pane = new JScrollPane(list);
-        return pane;
+        list = new JList<>(new DefaultListModel<>());
+        return new JScrollPane(list);
     }
 
     @Override
@@ -43,9 +42,8 @@ final class CacioListPeer extends CacioComponentPeer<List, JScrollPane> implemen
         list.addListSelectionListener(new SelectionListener());
     }
 
-    private DefaultListModel getModel() {
-        DefaultListModel m = (DefaultListModel) list.getModel();
-        return m;
+    private DefaultListModel<String> getModel() {
+        return (DefaultListModel<String>) list.getModel();
     }
 
     @Override
@@ -79,14 +77,14 @@ final class CacioListPeer extends CacioComponentPeer<List, JScrollPane> implemen
         Dimension minSize = getMinimumSize(5);
         Dimension actualSize = getSwingComponent().getPreferredSize();
         if (actualSize.width < minSize.width) actualSize.width = minSize.width;
-        if (actualSize.height < actualSize.height) actualSize.height = minSize.height;
+        if (actualSize.height < minSize.height) actualSize.height = minSize.height;
         return actualSize;
     }
     
     @Override
     public Dimension getPreferredSize() {
         int rows = getModel().getSize();
-        return getPreferredSize((rows < 5) ? 5 : rows);
+        return getPreferredSize(Math.max(rows, 5));
     }
 
     @Override

@@ -105,8 +105,7 @@ class CacioTextFieldPeer extends CacioComponentPeer<TextField, JPasswordField>
 
     @Override
     public String getText() {
-        
-        return getSwingComponent().getText();
+        return String.valueOf(getSwingComponent().getPassword());
     }
 
     @Override

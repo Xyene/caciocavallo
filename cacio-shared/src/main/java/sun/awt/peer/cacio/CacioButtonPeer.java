@@ -53,7 +53,6 @@ class CacioButtonPeer extends CacioComponentPeer<Button, JButton>
         @Override
         public void actionPerformed(ActionEvent event) {
             Button b = getAWTComponent();
-            ActionListener[] l = b.getActionListeners();
             ActionEvent ev = new ActionEvent(b, ActionEvent.ACTION_PERFORMED, b
                     .getActionCommand());
             // This sends both the new and old style events correctly.

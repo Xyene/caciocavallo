@@ -108,7 +108,7 @@ class CacioScrollPanePeer extends CacioContainerPeer<ScrollPane, JPanel>
             Component view = sp.getComponent(0);
             ComponentPeer peer = AWTAccessor.getComponentAccessor().getPeer(view);
             if (peer instanceof CacioComponentPeer) {
-                CacioComponentPeer ccp = (CacioComponentPeer) peer;
+                CacioComponentPeer<?, ?> ccp = (CacioComponentPeer<?, ?>) peer;
                 ccp.setViewport(viewX, viewY, viewWidth, viewHeight);
             }
         }
@@ -118,7 +118,7 @@ class CacioScrollPanePeer extends CacioContainerPeer<ScrollPane, JPanel>
     @Override
     public Dimension getPreferredSize() {
 
-        Dimension preferredSize = null;
+        Dimension preferredSize;
         JPanel component = getSwingComponent();
 
         if (component != null) {

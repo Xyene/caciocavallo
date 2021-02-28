@@ -63,8 +63,7 @@ class CacioTextAreaPeer extends CacioComponentPeer<TextArea, JScrollPane> implem
             hsp = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS;
             vsp = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
         }
-        JScrollPane sp = new JScrollPane(textArea, vsp, hsp);
-        return sp;
+        return new JScrollPane(textArea, vsp, hsp);
     }
 
     @Override

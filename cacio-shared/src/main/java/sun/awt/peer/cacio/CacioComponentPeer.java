@@ -66,20 +66,20 @@ import sun.java2d.pipe.Region;
  * Swing component.</li>
  * </ul>
  */
-class CacioComponentPeer<AWTComponentType extends Component,
+abstract class CacioComponentPeer<AWTComponentType extends Component,
                          SwingComponentType extends JComponent>
     implements ComponentPeer, CacioComponent {
 
     /**
      * The AWT component that corresponds to this component peer.
      */
-    private AWTComponentType awtComponent;
+    private final AWTComponentType awtComponent;
 
     /**
      * The backing Swing component. Some components don't have a backing
      * swing component and leave that to <code>null</code>.
      */
-    private SwingComponentType swingComponent;
+    private final SwingComponentType swingComponent;
 
     /**
      * The proxy for the Swing component.
@@ -94,7 +94,7 @@ class CacioComponentPeer<AWTComponentType extends Component,
     /**
      * The current repaint area.
      */
-    private RepaintArea paintArea;
+    private final RepaintArea paintArea;
 
     private Rectangle viewRect;
     
@@ -146,7 +146,7 @@ class CacioComponentPeer<AWTComponentType extends Component,
      * underlying platform window using the specified
      * {@link PlatformWindowFactory}.
      * 
-     * @param pwf
+     * @param pwf PlatformWindowFactory
      */
     void init(PlatformWindowFactory pwf) {
 
@@ -157,8 +157,8 @@ class CacioComponentPeer<AWTComponentType extends Component,
             if (parentComp.isLightweight()) {
                 parentComp = parentComp.getParent();
             } else {
-                CacioComponentPeer parentPeer =
-                    (CacioComponentPeer) getPeer(parentComp);
+                CacioComponentPeer<?, ?> parentPeer =
+                    (CacioComponentPeer<?, ?>) getPeer(parentComp);
                 parent = parentPeer.platformWindow;
             }
         }
@@ -205,10 +205,7 @@ class CacioComponentPeer<AWTComponentType extends Component,
         setEnabled(enabled);
     }
 
-    SwingComponentType initSwingComponent() {
-
-        return (SwingComponentType) new JComponent() {};
-    }
+    abstract SwingComponentType initSwingComponent();
 
     /**
      * Disposes the peer object and releases all associated native resources.
@@ -422,8 +419,7 @@ class CacioComponentPeer<AWTComponentType extends Component,
         Graphics peerG = g.create();
         try {
             if (swingComponent != null) {
-                JComponent c = swingComponent;
-                c.paint(peerG);
+                swingComponent.paint(peerG);
             }
         } finally {
             peerG.dispose();
@@ -501,7 +497,6 @@ class CacioComponentPeer<AWTComponentType extends Component,
     }
 
     /* FIX ME: these constants copied from java.awt.KeyboardFocusManager */
-    static final int SNFH_FAILURE = 0;
     static final int SNFH_SUCCESS_HANDLED = 1;
     static final int SNFH_SUCCESS_PROCEED = 2;
 
@@ -524,9 +519,7 @@ class CacioComponentPeer<AWTComponentType extends Component,
                                                    time, cause);
 
         switch (result) {
-        case SNFH_FAILURE:
-            return false;
-        case SNFH_SUCCESS_PROCEED:
+            case SNFH_SUCCESS_PROCEED:
             PlatformWindow pw = getPlatformWindow();
             pw.requestFocus();
             return CacioKeyboardFocusManagerPeer.getInstance().requestFocus(getAWTComponent(),
@@ -633,7 +626,7 @@ class CacioComponentPeer<AWTComponentType extends Component,
                 ComponentPeer peer = getPeer(parent);
                 if (peer instanceof CacioComponentPeer) {
                     parentsEnabled =
-                            ((CacioComponentPeer) peer).isParentsEnabled();
+                            ((CacioComponentPeer<?, ?>) peer).isParentsEnabled();
                 }
             }
         }

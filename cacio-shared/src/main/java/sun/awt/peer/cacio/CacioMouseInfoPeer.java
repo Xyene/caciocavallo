@@ -43,7 +43,7 @@ import java.awt.peer.MouseInfoPeer;
 
 public class CacioMouseInfoPeer implements MouseInfoPeer {
 
-    private static CacioMouseInfoPeer instance = new CacioMouseInfoPeer();
+    private static final CacioMouseInfoPeer instance = new CacioMouseInfoPeer();
 
     public static CacioMouseInfoPeer getInstance() {
         return instance;

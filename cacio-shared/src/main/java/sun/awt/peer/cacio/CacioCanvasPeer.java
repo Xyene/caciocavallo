@@ -39,6 +39,11 @@ class CacioCanvasPeer extends CacioComponentPeer<Canvas, JPanel>
     }
 
     @Override
+    JPanel initSwingComponent() {
+        return new JPanel();
+    }
+
+    @Override
     protected void peerPaint(Graphics g, boolean update) {
         // Canvas never does any painting by itself, not even clearing the
         // background.

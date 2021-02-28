@@ -38,6 +38,7 @@ class CacioPopupMenuPeer extends CacioMenuPeer implements PopupMenuPeer {
         super(m);
     }
 
+    @SuppressWarnings("deprecation")
     public void show(Event e) {
         JMenu m = (JMenu) getSwingMenu();
         JPopupMenu pm = m.getPopupMenu();

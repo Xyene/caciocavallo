@@ -49,7 +49,7 @@ abstract class AbstractManagedWindowContainer
     /**
      * The child windows of this container.
      */
-    private LinkedList<ManagedWindow> children;
+    private final LinkedList<ManagedWindow> children;
 
     /**
      * Constructs a new instance of AbstractManagedWindowContainer that

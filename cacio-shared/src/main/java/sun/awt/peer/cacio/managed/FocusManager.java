@@ -27,56 +27,22 @@ package sun.awt.peer.cacio.managed;
 
 import java.awt.Component;
 import java.awt.event.FocusEvent;
-import java.security.AccessController;
 import java.util.Stack;
 
-import sun.util.logging.PlatformLogger;
 import sun.awt.peer.cacio.CacioComponent;
-import sun.security.action.GetPropertyAction;
 
 public class FocusManager {
 
-    private static PlatformLogger logger = PlatformLogger.getLogger(FocusManager.class.getName());
-
-    private static FocusManager instance;
-    private static final Class focusManagerCls;
-
-    /**
-     * Load the specified FocusManager Implementation, or default to
-     * FocusManager in case the property "cacio.focusmgr" has not been set.
-     */
-    static {
-	String focusMgrClsName = AccessController.doPrivileged(new GetPropertyAction("cacio.focusmgr"));
-	Class cls = FocusManager.class;
-	try {
-	    if (focusMgrClsName != null) {
-		cls = Class.forName(focusMgrClsName);
-	    }
-	} catch (ClassNotFoundException e) {
-	    logger.severe("Unable to load FocusManager implementation", e);
-	}
-
-	focusManagerCls = cls;
-    }
+    private static final FocusManager instance = new FocusManager();
 
     /**
      * @return The FocusManager instance for the current "context"
      */
     static FocusManager getInstance() {
-	if (instance == null) {
-	    try {
-		instance = (FocusManager) focusManagerCls.newInstance();
-	    } catch (ReflectiveOperationException e) {
-		logger.severe("Unable to create FocusManager instance", e);
-	    }
-	}
-	return instance.getContextInstance();
+        return instance;
     }
 
-    private Stack<ManagedWindow> focusedWindowStack = new Stack<>();
-
-    public FocusManager() {
-    }
+    private final Stack<ManagedWindow> focusedWindowStack = new Stack<>();
 
     /**
      * The default-implementation is classloader scoped, as it stores the

@@ -47,7 +47,6 @@ class CacioMenuBarPeer extends CacioMenuComponentPeer<MenuBar,JMenuBar>
         MenuBar mb = getAWTMenu();
         int menuCount = mb.getMenuCount();
         for (int i = 0; i < menuCount; i++) {
-            Menu m = mb.getMenu(i);
             addMenu(mb.getMenu(i));
         }
         Menu helpMenu = mb.getHelpMenu();

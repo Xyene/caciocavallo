@@ -33,7 +33,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.MutableComboBoxModel;
 
-class CacioChoicePeer extends CacioComponentPeer<Choice, JComboBox>
+class CacioChoicePeer extends CacioComponentPeer<Choice, JComboBox<String>>
                       implements ChoicePeer {
 
     private class TrampolineListener implements ItemListener {
@@ -45,12 +45,12 @@ class CacioChoicePeer extends CacioComponentPeer<Choice, JComboBox>
             }
             ItemListener[] listeners = getAWTComponent().getItemListeners();
             if (listeners != null && listeners.length > 0) {
-                JComboBox cb = getSwingComponent();
+                JComboBox<?> cb = getSwingComponent();
                 Choice comp = getAWTComponent();
-                for (int i = 0; i < listeners.length; i++) {
+                for (ItemListener listener : listeners) {
                     ItemEvent ev = new ItemEvent(comp, e.getID(), cb.getSelectedItem(),
-                                                 e.getStateChange());
-                    listeners[i].itemStateChanged(ev);
+                            e.getStateChange());
+                    listener.itemStateChanged(ev);
                 }
             }
         }
@@ -62,10 +62,9 @@ class CacioChoicePeer extends CacioComponentPeer<Choice, JComboBox>
     }
 
     @Override
-    JComboBox initSwingComponent() {
+    JComboBox<String> initSwingComponent() {
 
-        JComboBox comboBox = new JComboBox();
-        return comboBox;
+        return new JComboBox<>();
     }
 
     @Override
@@ -81,10 +80,9 @@ class CacioChoicePeer extends CacioComponentPeer<Choice, JComboBox>
         getSwingComponent().addItemListener(new TrampolineListener());
     }
 
-    private MutableComboBoxModel getModel() {
-        ComboBoxModel m = getSwingComponent().getModel();
-        MutableComboBoxModel mm = (MutableComboBoxModel) m;
-        return mm;
+    private MutableComboBoxModel<String> getModel() {
+        ComboBoxModel<String> m = getSwingComponent().getModel();
+        return (MutableComboBoxModel<String>) m;
     }
 
     @Override
@@ -99,7 +97,7 @@ class CacioChoicePeer extends CacioComponentPeer<Choice, JComboBox>
 
     @Override
     public void removeAll() {
-        MutableComboBoxModel m = getModel();
+        MutableComboBoxModel<String> m = getModel();
         int size = m.getSize();
         for (int item = size - 1; item >= 0; item--) {
             m.removeElementAt(item);

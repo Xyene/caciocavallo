@@ -57,7 +57,7 @@ class CacioDialogPeer extends CacioWindowPeer implements DialogPeer {
 
     public void blockWindows(List<Window> windows) {
         for (Window window : windows) {
-            WindowPeer peer = (WindowPeer)AWTAccessor.getComponentAccessor().getPeer(window);
+            WindowPeer peer = AWTAccessor.getComponentAccessor().getPeer(window);
             if (peer != null) {
               peer.setModalBlocked((Dialog)getAWTComponent(), true);
             }

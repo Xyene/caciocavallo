@@ -34,8 +34,8 @@ class CacioMenuComponentPeer<AWTMenuComponentType extends MenuComponent,
                                      SwingMenuComponentType extends JComponent>
     implements MenuComponentPeer {
 
-    private AWTMenuComponentType awtMenu;
-    private SwingMenuComponentType swingMenu;
+    private final AWTMenuComponentType awtMenu;
+    private final SwingMenuComponentType swingMenu;
 
     CacioMenuComponentPeer(AWTMenuComponentType awtM,
                            SwingMenuComponentType swingM) {

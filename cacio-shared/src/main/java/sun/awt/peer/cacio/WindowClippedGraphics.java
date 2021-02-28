@@ -58,7 +58,7 @@ import sun.awt.ConstrainableGraphics;
 public class WindowClippedGraphics extends Graphics2D
                                    implements ConstrainableGraphics {
 
-    private Graphics2D wrapped;
+    private final Graphics2D wrapped;
 
     private Shape baseClip;
 
@@ -142,11 +142,6 @@ public class WindowClippedGraphics extends Graphics2D
             b.setBounds(userClip.getBounds());
             return b;
         }
-    }
-
-    @Override
-    public Rectangle getClipRect() {
-        return userClip.getBounds();
     }
 
     @Override

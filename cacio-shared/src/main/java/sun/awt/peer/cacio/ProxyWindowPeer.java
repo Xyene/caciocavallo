@@ -55,13 +55,13 @@ import sun.java2d.pipe.Region;
 
 class ProxyWindowPeer implements WindowPeer {
 
-    private ProxyWindow proxyWindow;
+    private final ProxyWindow proxyWindow;
 
     ProxyWindowPeer(ProxyWindow pw) {
         proxyWindow = pw;
     }
 
-    CacioComponentPeer getTarget() {
+    CacioComponentPeer<?, ?> getTarget() {
         return proxyWindow.getTargetPeer();
     }
 
