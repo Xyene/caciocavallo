@@ -30,6 +30,7 @@ import sun.awt.peer.cacio.managed.EventData;
 import sun.awt.peer.cacio.managed.PlatformScreen;
 
 import java.awt.*;
+import java.awt.event.ComponentEvent;
 
 public class WaylandEventSource implements CacioEventSource {
     private native void nativeGetEvent(EventData evt);
@@ -58,7 +59,7 @@ public class WaylandEventSource implements CacioEventSource {
 
             // map screen Id to corresponding PlatformScreen
             long screenId = (Long)evt.getSource();
-            PlatformScreen screen = screenSelector.screenById(screenId);
+            WaylandScreen screen = (WaylandScreen) screenSelector.screenById(screenId);
             if (screen == null) {
                 continue;
             }
@@ -67,6 +68,18 @@ public class WaylandEventSource implements CacioEventSource {
             if (screen.getBounds() != null) {
                 evt.setX(evt.getX() + (int) screenBounds.getX());
                 evt.setY(evt.getY() + (int) screenBounds.getY());
+            }
+
+
+            switch (evt.getId()) {
+                case ComponentEvent.COMPONENT_MOVED:
+                case ComponentEvent.COMPONENT_RESIZED:
+                case ComponentEvent.COMPONENT_SHOWN:
+                case ComponentEvent.COMPONENT_HIDDEN: {
+                    evt.setSource(screen.comp);
+                    screen.comp.dispatchEvent(evt.createAWTEvent());
+                    continue;
+                }
             }
 
             evt.setSource(screen);

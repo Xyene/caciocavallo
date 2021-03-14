@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "wayland_events.h"
 #include "wayland_shm_surface.h"
 
 static void noop() {
@@ -40,11 +41,10 @@ static void noop() {
 static void xdg_surface_handle_configure(void *data,
 		struct xdg_surface *xdg_surface, uint32_t serial) {
 	xdg_surface_ack_configure(xdg_surface, serial);
+
     ShmSurface *ssf = data;
-    if (ssf->ready)
-        ResizeShmScreenSurface(ssf, ssf->pendingW, ssf->pendingH);
-    else
-        ssf->configured = true;
+    new_surface_event(SURFACE_RESIZE, ssf, ssf->width, ssf->height);
+    ssf->configured = true;
 }
 
 static struct xdg_surface_listener surface_listener = {
@@ -55,8 +55,8 @@ static void xdg_toplevel_handle_configure(void *data, struct xdg_toplevel *tople
         int32_t width, int32_t height, struct wl_array * states) {
     ShmSurface *ssf = data;
     if (width > 0 && height > 0) {
-        ssf->pendingW = width;
-        ssf->pendingH = height;
+        ssf->width = width;
+        ssf->height = height;
     }
 }
 
@@ -124,8 +124,8 @@ ShmSurface* CreateShmScreenSurface(int64_t id, int32_t x, int32_t y, int32_t wid
     ShmSurface *ssf = malloc(sizeof(ShmSurface));
     if (!ssf) return NULL;
     memset(ssf, 0, sizeof(ShmSurface));
-    ssf->pendingW = width;
-    ssf->pendingH = height;
+    ssf->width = width;
+    ssf->height = height;
 
     ssf->surface = make_surface();
     if (ssf->surface == NULL) {
@@ -148,7 +148,7 @@ ShmSurface* CreateShmScreenSurface(int64_t id, int32_t x, int32_t y, int32_t wid
         return NULL;
     }
 
-    ssf->buffer = make_buffer(ssf->pool, ssf->pendingW, ssf->pendingH, WL_SHM_FORMAT_XRGB8888, pixel_depth);
+    ssf->buffer = make_buffer(ssf->pool, ssf->width, ssf->height, WL_SHM_FORMAT_XRGB8888, pixel_depth);
     if (ssf->buffer == NULL) {
         wl_shm_pool_destroy(ssf->pool);
         wl_surface_destroy(ssf->surface);
@@ -185,23 +185,6 @@ void DestroyShmScreenSurface(ShmSurface* surf) {
     wl_surface_destroy(surf->surface);
 
     free(surf);
-}
-
-
-void ResizeShmScreenSurface(ShmSurface* surface, int32_t width, int32_t height) {
-    struct wl_buffer *buffer = make_buffer(surface->pool, width, height, WL_SHM_FORMAT_XRGB8888, surface->pixel_depth);
-    if (!buffer) {
-        return;
-    }
-    surface->width = width;
-    surface->height = height;
-
-    wl_surface_attach(surface->surface, buffer, 0, 0);
-    wl_surface_damage(surface->surface, 0, 0, width, height);
-    wl_surface_commit(surface->surface);
-    if (surface->buffer)
-        wl_buffer_destroy(surface->buffer);
-    surface->buffer = buffer;
 }
 
 void UnmapShmScreenSurface(ShmSurface* surf) {

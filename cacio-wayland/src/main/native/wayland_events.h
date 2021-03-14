@@ -67,7 +67,8 @@
 enum SurfaceAction {
     SURFACE_MAP,
     SURFACE_UNMAP,
-    SURFACE_DISPOSE
+    SURFACE_DISPOSE,
+    SURFACE_RESIZE,
 };
 
 struct MouseEvent {

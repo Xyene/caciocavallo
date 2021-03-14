@@ -51,7 +51,7 @@ class WaylandScreen implements PlatformScreen, WindowListener, ComponentListener
     private static final AtomicLong ScreenIdGenerator = new AtomicLong(0);
 
     private WaylandShmSurfaceData   surfaceData;
-    private Component               comp;
+    Component               comp;
     private Rectangle               bounds;
     private GraphicsConfiguration   config;
 

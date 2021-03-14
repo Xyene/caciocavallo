@@ -292,6 +292,7 @@ void new_surface_event(enum SurfaceAction action, ShmSurface* surface, int32_t w
   Event* event = (Event*)malloc(sizeof(Event));
   if (event != NULL) {
     event->kind = SURFACE_EVENT;
+    event->id = surface->id;
     event->e.s.action = action;
     event->e.s.surface = surface;
     event->e.s.width = width;

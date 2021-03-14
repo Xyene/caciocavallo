@@ -35,7 +35,6 @@ struct shm_surface {
     struct wl_buffer*           buffer;
     struct wl_shm_pool*         pool;
     bool configured, ready;
-    int32_t pendingW, pendingH;
 
     void*                       content;
 

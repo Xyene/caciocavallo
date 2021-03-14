@@ -32,6 +32,7 @@
 
 #include "java_awt_event_MouseEvent.h"
 #include "java_awt_event_KeyEvent.h"
+#include "java_awt_event_ComponentEvent.h"
 #include "wayland.h"
 #include "wayland_events.h"
 
@@ -160,7 +161,7 @@ static void handle_display_event(Event* evt) {
     }
 }
 
-static void handle_surface_event(Event* evt) {
+static bool handle_surface_event(JNIEnv* env, Event* evt, jobject jevent) {
     ShmSurface* surface= evt->e.s.surface;
     switch(evt->e.s.action) {
         case SURFACE_DISPOSE:
@@ -172,7 +173,14 @@ static void handle_surface_event(Event* evt) {
         case SURFACE_MAP:
             RemapShmScreenSurface(surface, surface->width, surface->height);
             break;
+        case SURFACE_RESIZE: {
+            (*env)->SetIntField(env, jevent, _eventDataIdFieldID, java_awt_event_ComponentEvent_COMPONENT_RESIZED);
+            jobject sourceId = (*env)->NewObject(env, _longClass, _longCstor, evt->id);
+            (*env)->SetObjectField(env, jevent, _eventDataSourceFieldID, sourceId);
+            return true;
+        }
     }
+    return false;
 }
 
 // Map native event to awt event
@@ -188,8 +196,7 @@ bool map_event(JNIEnv* env, Event *event, jobject jevent) {
             handle_display_event(event);
             return false;
         case SURFACE_EVENT:
-            handle_surface_event(event);
-            return false;
+            return handle_surface_event(env, event, jevent);
     }
     return false;
 }
