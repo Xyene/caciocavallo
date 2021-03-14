@@ -30,6 +30,7 @@
             <arg>--add-exports=java.desktop/sun.awt.event=ALL-UNNAMED</arg>
             <arg>--add-exports=java.desktop/sun.font=ALL-UNNAMED</arg>
             <arg>--add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/sun.java2d=ALL-UNNAMED</arg>
             <arg>--add-exports=java.base/sun.security.action=ALL-UNNAMED</arg>
             <arg>--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED</arg>
           </compilerArgs>
