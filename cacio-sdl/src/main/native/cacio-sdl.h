@@ -39,7 +39,15 @@ typedef struct {
   SurfaceDataOps sdOps;
   SDL_Surface *surface;
   jint x, y, width, height;
+	SDL_Window *window;
+	SDL_Renderer *renderer;
 } SDLSurfaceDataOps;
+
+struct SDLWindowAndRenderer {
+	SDL_Window *window;
+	SDL_Renderer *renderer;
+	SDL_Surface *surface;
+};
 
 #ifdef	__cplusplus
 }

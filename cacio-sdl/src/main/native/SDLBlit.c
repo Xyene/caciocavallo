@@ -23,10 +23,11 @@
  * have any questions.
  */
 #include <jni.h>
-#include <SDL/SDL_video.h>
+#include <SDL2/SDL_video.h>
 
 #include "SDL.h"
 #include "cacio-sdl.h"
+#include "jnu.h"
 
 #include "net_java_openjdk_awt_peer_sdl_SDLBlit.h"
 
@@ -63,5 +64,5 @@ JNIEXPORT void JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLBlit_nativeBlit
         return;
    }
 
-   SDL_Flip(destOperations->surface);
+ //  SDL_RenderPresent(destOperations->renderer);
 }

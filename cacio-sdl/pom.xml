@@ -8,7 +8,12 @@
   </parent>
 
   <artifactId>cacio-sdl</artifactId>
-  <packaging>jar</packaging>
+	<packaging>nar</packaging>
+
+  <properties>
+		<SDL2.include>/usr/include/SDL2</SDL2.include>
+    <SDL2.lib>/usr/lib</SDL2.lib>
+  </properties>
 
   <name>Cacio SDL Module</name>
 
@@ -22,63 +27,64 @@
           <target>1.8</target>
           <compilerArgument>-XDignore.symbol.file=true</compilerArgument>
         </configuration>
-      </plugin>
+			</plugin>
+
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>native-maven-plugin</artifactId>
+        <groupId>com.github.maven-nar</groupId>
+        <artifactId>nar-maven-plugin</artifactId>
+        <version>3.10.1</version>
         <extensions>true</extensions>
         <configuration>
-          <javahClassNames>
-            <javahClassName>net.java.openjdk.awt.peer.sdl.SDLGraphicsEnvironment</javahClassName>
-            <javahClassName>net.java.openjdk.awt.peer.sdl.SDLScreen</javahClassName>
-            <javahClassName>net.java.openjdk.awt.peer.sdl.SDLSurfaceData</javahClassName>
-            <javahClassName>net.java.openjdk.awt.peer.sdl.SDLVolatileSurfaceManager</javahClassName>
-            <javahClassName>net.java.openjdk.awt.peer.sdl.SDLBlit</javahClassName>
-            <javahClassName>java.awt.event.MouseEvent</javahClassName>
-          </javahClassNames>
-          <javahSearchJNIFromDependencies>true</javahSearchJNIFromDependencies>
-          <javahOS>darwin</javahOS>
-          <compilerProvider>generic-classic</compilerProvider>
-          <compilerStartOptions>
-            <compilerStartOption>-g -Wall -O2 -fomit-frame-pointer -fPIC</compilerStartOption>
-            <compilerStartOption>-arch x86_64
-                  -I/usr/local/include/SDL
-            </compilerStartOption>
-          </compilerStartOptions>
-          <sources>
-            <source>
-              <directory>src/main/native</directory>
-              <fileNames>
-                <fileName>SDLBlit.c</fileName>
-                <fileName>SDLGraphicsEnvironment.c</fileName>
-                <fileName>SDLScreen.c</fileName>
-                <fileName>SDLSurfaceData.c</fileName>
-                <fileName>SDLVolatileSurfaceManager.c</fileName>
-              </fileNames>
-            </source>
-          </sources>
-          <linkerStartOptions>
-            <linkerStartOption>-dynamiclib -arch x86_64
-              -L/usr/local/lib -lSDL
-              -L${java.home}/lib -lawt -ljava
-            </linkerStartOption>
-          </linkerStartOptions>
-          <linkerFinalName></linkerFinalName>
-          <linkerEndOptions>
-            <linkerEndOption>-o ${project.build.directory}/libcacio-sdl.dylib</linkerEndOption>
-          </linkerEndOptions>
+          <libraries>
+            <library>
+              <type>jni</type>
+              <narSystemPackage>net.java.openjdk.cacio.sdl</narSystemPackage>
+            </library>
+          </libraries>
+          <c>
+            <includePaths>
+              <includePath><path>${SDL2.include}</path></includePath>
+            </includePaths>
+            <debug>true</debug>
+          </c>
+          <linker>
+            <libs>
+              <lib>
+                <name>SDL2</name>
+                <type>shared</type>
+                <directory>${SDL2.lib}</directory>
+              </lib>
+            </libs>
+          </linker>
         </configuration>
         <executions>
           <execution>
-            <id>javah</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>javah</goal>
-              <goal>compile</goal>
-              <goal>link</goal>
-            </goals>
+            <id>default-nar-javah</id>
+            <phase>none</phase>
           </execution>
         </executions>
+			</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>11</source>
+          <target>11</target>
+          <compilerArgs>
+            <arg>-XDignore.symbol.file=true</arg>
+            <arg>--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/sun.awt.image=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/sun.java2d=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/sun.java2d.loops=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/java.awt.dnd.peer=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/sun.awt=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.desktop/sun.awt.datatransfer=ALL-UNNAMED</arg>
+            <arg>-h</arg>
+            <arg>${project.build.directory}/nar/javah-include</arg>
+          </compilerArgs>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -23,9 +23,10 @@
  * have any questions.
  */
 #include <jni.h>
-#include <SDL/SDL_video.h>
+#include <SDL2/SDL_video.h>
 
 #include "SDL.h"
+#include "jnu.h"
 #include "cacio-sdl.h"
 
 #include "net_java_openjdk_awt_peer_sdl_SDLVolatileSurfaceManager.h"
@@ -45,8 +46,7 @@ JNIEXPORT jlong JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLVolatileSurfaceMan
     Uint32 amask = 0;
 
     /* TODO: pass the depth we really want for the image. */
-    surface = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCCOLORKEY |
-                                   SDL_DOUBLEBUF,
+    surface = SDL_CreateRGBSurface(/* SDL_HWSURFACE | SDL_SRCCOLORKEY |  SDL_DOUBLEBUF */ 0,
                                    width, height, 32,
                                    rmask, gmask, bmask, amask);
     if(surface == NULL) {
@@ -55,5 +55,5 @@ JNIEXPORT jlong JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLVolatileSurfaceMan
                         "SDLVolatileSurfaceManager::initSurface failed");
     }
 
-    return surface;
+    return (jlong) surface;
 }

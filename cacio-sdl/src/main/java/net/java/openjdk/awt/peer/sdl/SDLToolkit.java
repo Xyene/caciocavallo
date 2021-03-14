@@ -125,19 +125,8 @@ public class SDLToolkit extends CacioToolkit {
     }
 
     @Override
-    protected int getScreenWidth() {
-
-        GraphicsConfiguration config =
-                SDLGraphicsConfiguration.getDefaultConfiguration();
-        return config.getBounds().width;
-    }
-
-    @Override
-    protected int getScreenHeight() {
-
-        GraphicsConfiguration config =
-                SDLGraphicsConfiguration.getDefaultConfiguration();
-        return config.getBounds().height;
+    public boolean isTaskbarSupported() {
+        return true;
     }
 
     @Override
@@ -161,13 +150,6 @@ public class SDLToolkit extends CacioToolkit {
     public boolean isDesktopSupported() {
 
         return false;
-    }
-
-    @Override
-    protected DesktopPeer createDesktopPeer(Desktop target)
-            throws HeadlessException {
-
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

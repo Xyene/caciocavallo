@@ -80,13 +80,15 @@ JNIEXPORT void JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLScreen_initIDs
 JNIEXPORT jlong JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLScreen_nativeInitScreen
   (JNIEnv *env, jobject thiz __attribute__((unused)), jint width, jint height)
 {
-    SDL_Surface *surface = NULL;
-
     (*env)->CallStaticVoidMethod(env, sunToolkitCls, sunToolkitLockMID);
 
     /* passing 0 for bpp takes the current display video depth */
-    surface = SDL_SetVideoMode(width, height, 0, SDL_DOUBLEBUF | SDL_HWPALETTE | SDL_HWACCEL | SDL_HWACCEL);
-    if (surface == NULL) {
+		struct SDLWindowAndRenderer *data = calloc(1, sizeof(*data));
+    data->window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED,
+				SDL_WINDOWPOS_UNDEFINED, width, height, /* SDL_DOUBLEBUF |  SDL_HWPALETTE |  SDL_HWACCEL */ 0);
+		data->surface = SDL_GetWindowSurface(data->window);
+		//data->renderer = SDL_GetRenderer(data->window); //SDL_CreateRenderer(data->window, -1, SDL_RENDERER_ACCELERATED);
+    if (data->window == NULL || data->surface == NULL) {
         fprintf(stderr, "Unable to set video mode: %s\n", SDL_GetError());
         JNU_ThrowByName(env, "java/lang/InternalError",
                 "SDLScreen::nativeInitScreen: cannot create SDL_Surface.");
@@ -95,7 +97,7 @@ JNIEXPORT jlong JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLScreen_nativeInitS
     
     (*env)->CallStaticVoidMethod(env, sunToolkitCls, sunToolkitUnlockMID);
 
-    return (jlong) surface;
+    return (jlong) data;
 }
 
 JNIEXPORT void JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLScreen_nativeGetEvent

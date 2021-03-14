@@ -23,7 +23,7 @@
  * have any questions.
  */
 #include <jni.h>
-#include <SDL/SDL_video.h>
+#include <SDL2/SDL_video.h>
 
 #include "SDL.h"
 #include "cacio-sdl.h"
@@ -62,10 +62,10 @@ JNIEXPORT void JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLSurfaceData_initIDs
 JNIEXPORT void JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLSurfaceData_initOps
   (JNIEnv *env, jobject thiz, jlong nativeSDLSurface, jint width, jint height)
 {
-    SDL_Surface *surface = NULL;
+    struct SDLWindowAndRenderer *data = NULL;
     SDLSurfaceDataOps *operations = NULL;
 
-    surface = (SDL_Surface *) nativeSDLSurface;
+    data = (struct SDLWindowAndRenderer *) nativeSDLSurface;
 
     operations = (SDLSurfaceDataOps *)
         SurfaceData_InitOps(env, thiz, sizeof(SDLSurfaceDataOps));
@@ -74,7 +74,9 @@ JNIEXPORT void JNICALL Java_net_java_openjdk_awt_peer_sdl_SDLSurfaceData_initOps
     operations->sdOps.GetRasInfo = &SDLGetRasInfo;
     operations->sdOps.Release = &SDLRelease;
     operations->sdOps.Unlock = &SDLUnlock;
-    operations->surface = surface;
+    operations->window = data->window;
+		operations->renderer = data->renderer;
+		operations->surface = data->surface;
     operations->width = width;
     operations->height = height;
 }
@@ -87,6 +89,7 @@ static jint SDLLock(JNIEnv* env, SurfaceDataOps* ops,
 
     operations = (SDLSurfaceDataOps*) ops;
 
+		fprintf(stderr, "1 %p\n", ops);
     (*env)->CallStaticVoidMethod(env, sunToolkitCls, sunToolkitLockMID);
 
     if (rasInfo->bounds.x1 < 0) {
@@ -112,6 +115,7 @@ static jint SDLLock(JNIEnv* env, SurfaceDataOps* ops,
     if (rasInfo->bounds.y2 > operations->height) {
       rasInfo->bounds.y2 = operations->height;
     }
+		fprintf(stderr, "2 %p\n", operations->surface);
 
 /*
     if (rasInfo->bounds.y1 >= 1600) {
@@ -135,16 +139,20 @@ static jint SDLLock(JNIEnv* env, SurfaceDataOps* ops,
     } else {
         ret = SD_SUCCESS;
     }
+		fprintf(stderr, "3\n");
 
     if (SDL_MUSTLOCK(operations->surface) != 0) {
+			fprintf(stderr, "4\n");
 
         if (SDL_LockSurface(operations->surface) < 0) {
+						fprintf(stderr, "5\n");
             (*env)->CallStaticVoidMethod(env, sunToolkitCls,
                                          sunToolkitUnlockMID);
             JNU_ThrowByName(env, "java/lang/InternalError",
                 "SDLSurfaceData::SDLLock: cannot lock SDL_Surface.");
         }
     }
+		fprintf(stderr, "4'\n");
 
     return ret;
 }
@@ -215,8 +223,8 @@ static void SDLUnlock(JNIEnv* env, SurfaceDataOps* ops, SurfaceDataRasInfo* rasI
         height = 0;
     }
 
-    SDL_UpdateRect(operations->surface, rasInfo->bounds.x1, rasInfo->bounds.y1,
+    /*SDL_UpdateRect(operations->surface, rasInfo->bounds.x1, rasInfo->bounds.y1,
                    width, height);
-    
+    */
     (*env)->CallStaticVoidMethod(env, sunToolkitCls, sunToolkitUnlockMID);
 }
