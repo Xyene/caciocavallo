@@ -23,6 +23,7 @@
  * questions.
  */
 
+#define _GNU_SOURCE
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -86,13 +87,12 @@ static struct xdg_surface* make_shell_surface(struct wl_surface* surface, ShmSur
 
 static struct wl_shm_pool* make_shm_pool(int32_t width, int32_t height, int32_t pixel_depth, void** addr) {
   struct wl_shm_pool  *pool;
-  char template[] = "/tmp/wayland_mmap_XXXXXX";
   int fd;
 
    int32_t stride = width * pixel_depth;
    int32_t size = stride * height;
 
-   fd = mkostemp(template, O_RDWR | O_CREAT | O_TRUNC);
+   fd = memfd_create("wayland-shm-pool", 0);
    if (fd < 0) {
      return NULL;
    }
