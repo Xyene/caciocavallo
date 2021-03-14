@@ -64,22 +64,19 @@ public class WaylandEventSource implements CacioEventSource {
                 continue;
             }
 
+            switch (evt.getId()) {
+                case ComponentEvent.COMPONENT_RESIZED: {
+                    evt.setSource(screen.comp);
+                    screen.comp.setSize(evt.getX(), evt.getY());
+                    screen.comp.dispatchEvent(evt.createAWTEvent());
+                    continue;
+                }
+            }
+
             Rectangle screenBounds = screen.getBounds();
             if (screen.getBounds() != null) {
                 evt.setX(evt.getX() + (int) screenBounds.getX());
                 evt.setY(evt.getY() + (int) screenBounds.getY());
-            }
-
-
-            switch (evt.getId()) {
-                case ComponentEvent.COMPONENT_MOVED:
-                case ComponentEvent.COMPONENT_RESIZED:
-                case ComponentEvent.COMPONENT_SHOWN:
-                case ComponentEvent.COMPONENT_HIDDEN: {
-                    evt.setSource(screen.comp);
-                    screen.comp.dispatchEvent(evt.createAWTEvent());
-                    continue;
-                }
             }
 
             evt.setSource(screen);

@@ -175,6 +175,8 @@ static bool handle_surface_event(JNIEnv* env, Event* evt, jobject jevent) {
             break;
         case SURFACE_RESIZE: {
             (*env)->SetIntField(env, jevent, _eventDataIdFieldID, java_awt_event_ComponentEvent_COMPONENT_RESIZED);
+            (*env)->SetIntField(env, jevent, _eventDataXFieldID, (jint)evt->e.s.width);
+            (*env)->SetIntField(env, jevent, _eventDataYFieldID, (jint)evt->e.s.height);
             jobject sourceId = (*env)->NewObject(env, _longClass, _longCstor, evt->id);
             (*env)->SetObjectField(env, jevent, _eventDataSourceFieldID, sourceId);
             return true;
