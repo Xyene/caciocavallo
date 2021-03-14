@@ -39,15 +39,28 @@ static void noop() {
 static void xdg_surface_handle_configure(void *data,
 		struct xdg_surface *xdg_surface, uint32_t serial) {
 	xdg_surface_ack_configure(xdg_surface, serial);
-	//wl_surface_commit(surface);
+    ShmSurface *ssf = data;
+    if (ssf->ready)
+        ResizeShmScreenSurface(ssf, ssf->pendingW, ssf->pendingH);
+    else
+        ssf->configured = true;
 }
 
 static struct xdg_surface_listener surface_listener = {
 	.configure = xdg_surface_handle_configure,
 };
 
+static void xdg_toplevel_handle_configure(void *data, struct xdg_toplevel *toplevel,
+        int32_t width, int32_t height, struct wl_array * states) {
+    ShmSurface *ssf = data;
+    if (width > 0 && height > 0) {
+        ssf->pendingW = width;
+        ssf->pendingH = height;
+    }
+}
+
 static struct xdg_toplevel_listener toplevel_listener = {
-	.configure = noop,
+	.configure = xdg_toplevel_handle_configure,
 	.close = noop,
 };
 
@@ -56,16 +69,18 @@ static struct wl_surface* make_surface() {
     return wl_compositor_create_surface(display->compositor);
 }
 
-static struct xdg_surface* make_shell_surface(struct wl_surface* surface) {
+static struct xdg_surface* make_shell_surface(struct wl_surface* surface, ShmSurface *ssf) {
     struct display* display = get_display();
 		struct xdg_surface *xdg_surface = xdg_wm_base_get_xdg_surface(display->wm_base, surface);
 		struct xdg_toplevel *xdg_toplevel = xdg_surface_get_toplevel(xdg_surface);
 
-		xdg_surface_add_listener(xdg_surface, &surface_listener, NULL);
-		xdg_toplevel_add_listener(xdg_toplevel, &toplevel_listener, NULL);
+		xdg_surface_add_listener(xdg_surface, &surface_listener, ssf);
+		xdg_toplevel_add_listener(xdg_toplevel, &toplevel_listener, ssf);
 
 		wl_surface_commit(surface);
-		wl_display_roundtrip(display->display);
+
+        while (!ssf->configured)
+		  wl_display_roundtrip(display->display);
     return xdg_surface;
 }
 
@@ -104,53 +119,43 @@ static struct wl_buffer* make_buffer(struct wl_shm_pool *pool, int32_t width, in
 }
 
 ShmSurface* CreateShmScreenSurface(int64_t id, int32_t x, int32_t y, int32_t width, int32_t height, int32_t pixel_depth) {
-    struct wl_surface*          surface;
-    struct xdg_surface*    shell_surface;
+    void *content;
 
-    struct wl_shm_pool*         pool;
-    struct wl_buffer*           buffer;
-    void*                       content;
+    ShmSurface *ssf = malloc(sizeof(ShmSurface));
+    if (!ssf) return NULL;
+    memset(ssf, 0, sizeof(ShmSurface));
+    ssf->pendingW = width;
+    ssf->pendingH = height;
 
-    surface = make_surface();
-    if (surface == NULL) return NULL;
-
-    shell_surface = make_shell_surface(surface);
-    if (shell_surface == NULL) {
-        wl_surface_destroy(surface);
+    ssf->surface = make_surface();
+    if (ssf->surface == NULL) {
+        free(ssf);
         return NULL;
     }
 
-    pool = make_shm_pool(get_display_width(), get_display_height(), pixel_depth, &content);
-    if (pool == NULL) {
-        wl_surface_destroy(surface);
-     //FIXME   wl_shell_surface_destroy(shell_surface);
+    ssf->xdg_surface = make_shell_surface(ssf->surface, ssf);
+    if (ssf->xdg_surface == NULL) {
+        wl_surface_destroy(ssf->surface);
+        free(ssf);
         return NULL;
     }
 
-    buffer = make_buffer(pool, width, height, WL_SHM_FORMAT_XRGB8888, pixel_depth);
-    if (buffer == NULL) {
-        wl_shm_pool_destroy(pool);
-        wl_surface_destroy(surface);
-    //FIXME    wl_shell_surface_destroy(shell_surface);
+    ssf->pool = make_shm_pool(get_display_width(), get_display_height(), pixel_depth, &content);
+    if (ssf->pool == NULL) {
+        wl_surface_destroy(ssf->surface);
+        xdg_surface_destroy(ssf->xdg_surface);
+        free(ssf);
         return NULL;
     }
 
-
-    struct shm_surface* ssf = (struct shm_surface*)malloc(sizeof(struct shm_surface));
-    if (ssf == NULL) {
-        wl_buffer_destroy(buffer);
-        wl_shm_pool_destroy(pool);
-        wl_surface_destroy(surface);
-    //FIXME    wl_shell_surface_destroy(shell_surface);
+    ssf->buffer = make_buffer(ssf->pool, ssf->pendingW, ssf->pendingH, WL_SHM_FORMAT_XRGB8888, pixel_depth);
+    if (ssf->buffer == NULL) {
+        wl_shm_pool_destroy(ssf->pool);
+        wl_surface_destroy(ssf->surface);
+        xdg_surface_destroy(ssf->xdg_surface);
+        free(ssf);
         return NULL;
     }
-
-    memset((void*)ssf, 0, sizeof(struct shm_surface));
-
-    ssf->surface = surface;
-    ssf->xdg_surface = shell_surface;
-    ssf->buffer = buffer;
-    ssf->pool = pool;
 
     ssf->content = content;
     ssf->id = id;
@@ -161,10 +166,11 @@ ShmSurface* CreateShmScreenSurface(int64_t id, int32_t x, int32_t y, int32_t wid
     ssf->pixel_depth = pixel_depth;
     ssf->format = WL_SHM_FORMAT_XRGB8888;
 
-    wl_surface_set_user_data(surface, ssf);
+    wl_surface_set_user_data(ssf->surface, ssf);
 
-    wl_surface_attach(surface, buffer, 0, 0);
-    wl_surface_commit(surface);
+    wl_surface_attach(ssf->surface, ssf->buffer, 0, 0);
+    wl_surface_commit(ssf->surface);
+    ssf->ready = true;
 
     return ssf;
 }
@@ -175,22 +181,34 @@ void DestroyShmScreenSurface(ShmSurface* surf) {
 
     wl_buffer_destroy(surf->buffer);
     wl_shm_pool_destroy(surf->pool);
-    wl_surface_destroy(surf->surface);
     xdg_surface_destroy(surf->xdg_surface);
+    wl_surface_destroy(surf->surface);
 
     free(surf);
 }
 
 
-void ResizeShmScreenSurface(ShmSurface* surf, int32_t width, int32_t height) {
-    UnmapShmScreenSurface(surf);
-    RemapShmScreenSurface(surf, width, height);
+void ResizeShmScreenSurface(ShmSurface* surface, int32_t width, int32_t height) {
+    struct wl_buffer *buffer = make_buffer(surface->pool, width, height, WL_SHM_FORMAT_XRGB8888, surface->pixel_depth);
+    if (!buffer) {
+        return;
+    }
+    surface->width = width;
+    surface->height = height;
+
+    wl_surface_attach(surface->surface, buffer, 0, 0);
+    wl_surface_damage(surface->surface, 0, 0, width, height);
+    wl_surface_commit(surface->surface);
+    if (surface->buffer)
+        wl_buffer_destroy(surface->buffer);
+    surface->buffer = buffer;
 }
 
 void UnmapShmScreenSurface(ShmSurface* surf) {
     wl_surface_attach(surf->surface, NULL, 0, 0);
     wl_surface_commit(surf->surface);
-    wl_buffer_destroy(surf->buffer);
+    if (surf->buffer)
+        wl_buffer_destroy(surf->buffer);
     surf->buffer = NULL;
     surf->width = 0;
     surf->height = 0;

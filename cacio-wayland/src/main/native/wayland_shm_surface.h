@@ -34,6 +34,8 @@ struct shm_surface {
     struct xdg_surface*    xdg_surface;
     struct wl_buffer*           buffer;
     struct wl_shm_pool*         pool;
+    bool configured, ready;
+    int32_t pendingW, pendingH;
 
     void*                       content;
 
@@ -56,6 +58,7 @@ ShmSurface* CreateShmScreenSurface(int64_t id, int32_t x, int32_t y, int32_t wid
   int32_t pixel_depth);
 void DestroyShmScreenSurface(ShmSurface* surf);
 
+void ResizeShmScreenSurface(ShmSurface* surf, int32_t width, int32_t height);
 void UnmapShmScreenSurface(ShmSurface* surf);
 bool RemapShmScreenSurface(ShmSurface* surface, int32_t width, int32_t height);
 
