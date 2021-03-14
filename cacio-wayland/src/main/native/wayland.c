@@ -72,9 +72,9 @@ static void registry_handler(void *data, struct wl_registry *registry, uint32_t 
     if (strcmp(interface, wl_compositor_interface.name) == 0) {
       _display.compositor = wl_registry_bind(registry,
 				      id, &wl_compositor_interface, WL_VERSION);
-    } else if (strcmp(interface, wl_shell_interface.name) == 0) {
-      _display.shell = wl_registry_bind(registry, id,
-                       &wl_shell_interface, WL_VERSION);
+    } else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
+      _display.wm_base = wl_registry_bind(registry, id,
+                       &xdg_wm_base_interface, 1);
     } else if (strcmp(interface, wl_output_interface.name) == 0) {
       _display.output = wl_registry_bind(registry, id, &wl_output_interface, WL_VERSION);
       wl_output_add_listener(_display.output, &output_listener, NULL);
@@ -134,7 +134,7 @@ bool is_input_inited() {
 void wayland_cleanup() {
  if (_display.compositor != NULL)    wl_compositor_destroy(_display.compositor);
  if (_display.subcompositor != NULL) wl_subcompositor_destroy(_display.subcompositor);
- if (_display.shell != NULL)         wl_shell_destroy(_display.shell);
+ //if (_display.shell != NULL)         wl_shell_destroy(_display.shell);
  if (_display.shm != NULL)           wl_shm_destroy(_display.shm);
 
  if (_display.output != NULL)        wl_output_destroy(_display.output);

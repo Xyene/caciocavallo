@@ -31,7 +31,7 @@
 
 struct shm_surface {
     struct wl_surface*          surface;
-    struct wl_shell_surface*    shell_surface;
+    struct xdg_surface*    xdg_surface;
     struct wl_buffer*           buffer;
     struct wl_shm_pool*         pool;
 

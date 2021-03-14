@@ -35,12 +35,12 @@
   <name>Cacio Wayland Module</name>
 
   <properties>
-    <wayland.include>/usr/local/include/wayland</wayland.include>
-    <xkbcommon.include>//usr/local/include</xkbcommon.include>
-    <cairo.include>/usr/local/include/cairo</cairo.include>
-    <wayland.lib>/usr/local/lib</wayland.lib>
-    <xkbcommon.lib>/usr/local/lib</xkbcommon.lib>
-    <cairo.lib>/usr/local/lib</cairo.lib>
+    <wayland.include>/usr/include</wayland.include>
+    <xkbcommon.include>/usr/include</xkbcommon.include>
+    <cairo.include>/usr/include/cairo</cairo.include>
+    <wayland.lib>/usr/lib</wayland.lib>
+    <xkbcommon.lib>/usr/lib</xkbcommon.lib>
+    <cairo.lib>/usr/lib</cairo.lib>
   </properties>
 
   <dependencies>

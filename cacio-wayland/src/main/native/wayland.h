@@ -32,6 +32,7 @@
 #include <wayland-egl.h>
 #include <xkbcommon/xkbcommon.h>
 
+#include "xdg-shell-client-protocol.h"
 
 #ifndef bool
 typedef int bool;
@@ -56,9 +57,9 @@ struct display {
     struct wl_registry*         registry;
     struct wl_compositor*       compositor;
     struct wl_subcompositor*    subcompositor;
-    struct wl_shell*            shell;
     struct wl_shm*              shm;
     struct wl_output*           output;
+		struct xdg_wm_base *wm_base;
 
     // Display dimension
     int32_t                     width;
