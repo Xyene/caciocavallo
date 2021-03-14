@@ -62,9 +62,9 @@ JNIEXPORT void JNICALL Java_net_java_openjdk_cacio_wayland_WaylandSurface_unmap
 /*
  * Class:     net_java_openjdk_cacio_wayland_WaylandSurface
  * Method:    remap
- * Signature: (J)V
+ * Signature: (JII)V
  */
 JNIEXPORT void JNICALL Java_net_java_openjdk_cacio_wayland_WaylandSurface_remap
-  (JNIEnv *env, jclass clz, jlong surface) {
-    new_surface_event(SURFACE_MAP, (ShmSurface*)surface, 0, 0);
+  (JNIEnv *env, jclass clz, jlong surface, jint width, jint height) {
+    new_surface_event(SURFACE_MAP, (ShmSurface*)surface, width, height);
 }

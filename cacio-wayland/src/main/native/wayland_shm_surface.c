@@ -209,6 +209,8 @@ bool RemapShmScreenSurface(ShmSurface* surface, int32_t width, int32_t height) {
     wl_surface_attach(surface->surface, buffer, 0, 0);
     wl_surface_damage(surface->surface, 0, 0, width, height);
     wl_surface_commit(surface->surface);
+    if (surface->buffer)
+        wl_buffer_destroy(surface->buffer);
     surface->buffer = buffer;
     return true;
 }

@@ -108,19 +108,12 @@ class WaylandScreen implements PlatformScreen, WindowListener, ComponentListener
         return g2d;
     }
 
-
     private void resizeSurface(Rectangle bounds) {
-        // Could not resize surface in wayland level, so destroy current surface and recreate
-        // the surface with desirable size
-        if (this.surfaceData != null) {
-            this.surfaceData.dispose();
-        }
-
-        this.surfaceData = new WaylandShmSurfaceData(this, WaylandShmSurfaceData.typeDefault, getColorModel(), bounds);
+        getSurfaceData().remap((int) bounds.getWidth(), (int) bounds.getHeight());
         this.bounds = new Rectangle(bounds);
     }
 
-    private SurfaceData getSurfaceData() {
+    private WaylandShmSurfaceData getSurfaceData() {
         if(comp.getX() != 0 || comp.getY() != 0) {
             comp.setLocation(0, 0);
         }
@@ -144,19 +137,10 @@ class WaylandScreen implements PlatformScreen, WindowListener, ComponentListener
 
     @Override
     public void componentShown(ComponentEvent componentEvent) {
-        componentEvent.getComponent().setLocation(0, 0);
-        if (this.surfaceData == null || !this.bounds.equals(componentEvent.getComponent().getBounds())) {
-            resizeSurface(componentEvent.getComponent().getBounds());
-        } else {
-            this.surfaceData.remap();
-        }
     }
 
     @Override
     public void componentHidden(ComponentEvent componentEvent) {
-        if (this.surfaceData != null) {
-            this.surfaceData.unmap();
-        }
     }
 
     @Override

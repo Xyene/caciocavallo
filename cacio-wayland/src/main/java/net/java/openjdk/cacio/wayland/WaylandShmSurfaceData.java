@@ -62,7 +62,7 @@ class WaylandShmSurfaceData extends SurfaceData {
         WaylandSurface.dispose(surface);
     }
     final void unmap() { WaylandSurface.unmap(surface);}
-    final void remap() { WaylandSurface.remap(surface); }
+    final void remap(int width, int height) { WaylandSurface.remap(surface, width, height); }
 
     @Override
     public SurfaceData getReplacement() {

@@ -171,7 +171,7 @@ static bool handle_surface_event(JNIEnv* env, Event* evt, jobject jevent) {
             UnmapShmScreenSurface(surface);
             break;
         case SURFACE_MAP:
-            RemapShmScreenSurface(surface, surface->width, surface->height);
+            RemapShmScreenSurface(surface, evt->e.s.width, evt->e.s.height);
             break;
         case SURFACE_RESIZE: {
             (*env)->SetIntField(env, jevent, _eventDataIdFieldID, java_awt_event_ComponentEvent_COMPONENT_RESIZED);

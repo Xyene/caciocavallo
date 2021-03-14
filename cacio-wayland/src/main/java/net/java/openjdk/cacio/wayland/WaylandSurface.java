@@ -29,5 +29,5 @@ public class WaylandSurface {
     public static native long createShmScreenSurface(long id, int x, int y, int width, int height, int pixel_depth);
     public static native void dispose(long surface);
     public static native void unmap(long surface);
-    public static native void remap(long surface);
+    public static native void remap(long surface, int width, int height);
 }
